@@ -1,0 +1,72 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manifest - {{ manifest.manifest_id }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6 text-gray-800">
+
+    <div class="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Manifest: {{ manifest.manifest_id }}</h1>
+            <div class="flex space-x-2">
+                <a href="{% url 'manifest_pdf' manifest.pk %}"
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                   target="_blank">
+                    Download PDF
+                </a>
+                <button onclick="window.print()"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                    Print
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-sm mb-6">
+            <p><strong>Vehicle No:</strong> {{ manifest.vehicle_no }}</p>
+            <p><strong>Driver Name:</strong> {{ manifest.driver_name }}</p>
+            <p><strong>Created At:</strong> {{ manifest.created_at }}</p>
+        </div>
+
+        <hr class="my-4">
+
+        <h2 class="text-xl font-semibold mb-2">Shipments</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full table-auto border border-gray-300">
+                <thead class="bg-gray-200">
+                    <tr>
+                        <th class="border px-3 py-2">Consignment No</th>
+                        <th class="border px-3 py-2">Origin</th>
+                        <th class="border px-3 py-2">Destination</th>
+                        <th class="border px-3 py-2">No. of Articles</th>
+                        <th class="border px-3 py-2">Charged Weight</th>
+                        <th class="border px-3 py-2">Freight</th>
+                        <th class="border px-3 py-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in manifest.shipments.all %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="border px-3 py-2">{{ s.consignment_no }}</td>
+                        <td class="border px-3 py-2">{{ s.origin }}</td>
+                        <td class="border px-3 py-2">{{ s.destination }}</td>
+                        <td class="border px-3 py-2">{{ s.noa }}</td>
+                        <td class="border px-3 py-2">{{ s.charged_weight }} kg</td>
+                        <td class="border px-3 py-2">₹{{ s.freight }}</td>
+                        <td class="border px-3 py-2">{{ s.status }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-gray-500 py-4">No shipments added.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

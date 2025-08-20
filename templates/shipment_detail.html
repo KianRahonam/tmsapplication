@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shipment Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 0.5fr 0.5fr;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            font-size: 9px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .value {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .back-button {
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #e65b50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="details">
+        <!-- Consignment Info -->
+        <div>
+            <label>Date</label>
+            <div class="value">{{ shipment.date }}</div>
+        </div>
+        <div>
+            <label>Freight</label>
+            <div class="value">{{ shipment.freight }}</div>
+        </div>
+        <div>
+            <label>Payment Mode</label>
+            <div class="value">{{ shipment.payment_mode }}</div>
+        </div>
+        <div>
+            <label>Vehicle No</label>
+            <div class="value">{{ shipment.vehicle_no }}</div>
+        </div>
+        <div>
+            <label>Origin</label>
+            <div class="value">{{ shipment.origin }}</div>
+        </div>
+        <div>
+            <label>Origin Pincode</label>
+            <div class="value">{{ shipment.origin_pin }}</div>
+        </div>
+        <div>
+            <label>Destination</label>
+            <div class="value">{{ shipment.destination }}</div>
+        </div>
+        <div>
+            <label>Destination Pincode</label>
+            <div class="value">{{ shipment.destination_pin }}</div>
+        </div>
+        <div>
+            <label>Driver Details</label>
+            <div class="value">{{ shipment.driver_details }}</div>
+        </div>
+
+        <!-- Consignor -->
+        <div class="full-width"><strong>Consignor Details</strong></div>
+        <div>
+            <label>Consignor Name</label>
+            <div class="value">{{ shipment.consignor_name }}</div>
+        </div>
+        <div class="full-width">
+            <label>Consignor Address</label>
+            <div class="value">{{ shipment.consignor_address }}</div>
+        </div>
+        <div>
+            <label>Consignor GST</label>
+            <div class="value">{{ shipment.consignor_gst }}</div>
+        </div>
+        <div>
+            <label>Consignor Contact</label>
+            <div class="value">{{ shipment.consignor_contact }}</div>
+        </div>
+
+        <!-- Consignee -->
+        <div class="full-width"><strong>Consignee Details</strong></div>
+        <div>
+            <label>Consignee Name</label>
+            <div class="value">{{ shipment.consignee_name }}</div>
+        </div>
+        <div class="full-width">
+            <label>Consignee Address</label>
+            <div class="value">{{ shipment.consignee_address }}</div>
+        </div>
+        <div>
+            <label>Consignee GST</label>
+            <div class="value">{{ shipment.consignee_gst }}</div>
+        </div>
+        <div>
+            <label>Consignee Contact</label>
+            <div class="value">{{ shipment.consignee_contact }}</div>
+        </div>
+
+        <!-- Invoice -->
+        <div>
+            <label>Invoice Ref No</label>
+            <div class="value">{{ shipment.invoice_ref_number }}</div>
+        </div>
+        <div>
+            <label>E-Waybill Number</label>
+            <div class="value">{{ shipment.ewaybill_number }}</div>
+        </div>
+        <div>
+            <label>Value</label>
+            <div class="value">{{ shipment.value }}</div>
+        </div>
+        <div>
+            <label>Pack Type</label>
+            <div class="value">{{ shipment.pack_type }}</div>
+        </div>
+        <div>
+            <label>Status</label>
+            <div class="value">{{ shipment.status }}</div>
+        </div>
+        <div>
+            <label>Estimated Delivery Date</label>
+            <div class="value">{{ shipment.estimated_delivery_date }}</div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="window.history.back();">Back</button>
+</div>
+
+</body>
+</html>
+{% endblock %}

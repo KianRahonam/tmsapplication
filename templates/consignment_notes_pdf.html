@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Consignment Note</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            page-break-after: always;
+        }
+
+        .note {
+            border: 1px solid #000;
+            padding: 10px;
+            height: 48%;
+            box-sizing: border-box;
+            margin-bottom: 8px;
+        }
+
+        .copy-label {
+            text-align: right;
+            font-size: 8pt;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .company-header {
+            text-align: center;
+            font-size: 8pt;
+            border-bottom: 1px dashed #aaa;
+            padding-bottom: 4px;
+            margin-bottom: 5px;
+        }
+
+        .logo-barcode-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-barcode-row img {
+            height: 40px;
+        }
+
+        .barcode {
+            text-align: right;
+            font-family: "Courier";
+            font-size: 12pt;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 8.5pt;
+        }
+
+        td {
+            vertical-align: top;
+            padding: 3px;
+        }
+
+        .shipment-details th,
+        .shipment-details td {
+            border: 1px solid #000;
+            padding: 3px;
+        }
+
+        .signature-box td {
+            border: 1px solid #000;
+            padding: 10px;
+            height: 40px;
+        }
+
+        .terms {
+            font-size: 7pt;
+            border-top: 1px dashed #888;
+            padding-top: 5px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+{% for shipment in shipments %}
+<div class="page">
+
+{% for copy_label in copy_labels %}
+    <div class="note">
+        <div class="copy-label">{{ copy_label }}</div>
+
+        <div class="logo-barcode-row">
+            <img src="{% static 'logo.png' %}" alt="Company Logo">
+            <div class="barcode">
+                <strong>Consignment #: {{ shipment.consignment_no }}</strong>
+                <br><strong>Date: {{ shipment.date|date:"d-m-Y" }}</strong>
+            </div>
+        </div>
+
+        <div class="company-header">
+            <strong>EXCLUSIVE LOGISTICS LLP.</strong><br>
+            #81, Basaveseswara Badavane, Kuduregere main Road, Bengaluru – 562123, Karnataka, IN<br>
+            Phone: +91 99861 87727 | Email: info@exclusivelogistics.in | Web: www.exclusivelogistics.in<br>
+            GSTN: 29AALFE9371R1ZA
+        </div>
+
+        <table>
+            <tr>
+                <td width="50%">
+                    <strong>Consignor:</strong><br>
+                    {{ shipment.consignor_name }}<br>
+                    {{ shipment.consignor_address }}<br>
+                    Contact: {{ shipment.consignor_contact }}
+                </td>
+                <td width="50%">
+                    <strong>Consignee:</strong><br>
+                    {{ shipment.consignee_name }}<br>
+                    {{ shipment.consignee_address }}<br>
+                    Contact: {{ shipment.consignee_contact }}
+                </td>
+            </tr>
+        </table>
+
+        <table class="shipment-details" style="margin-top: 5px;">
+            <tr>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Vehicle</th>
+                <th>Driver</th>
+                <th>Invoice</th>
+                <th>E-Way Bill</th>
+            </tr>
+            <tr>
+                <td>{{ shipment.origin }} - {{ shipment.origin_pin }}</td>
+                <td>{{ shipment.destination }} - {{ shipment.destination_pin }}</td>
+                <td>{{ shipment.vehicle_no }}</td>
+                <td>{{ shipment.driver_details }}</td>
+                <td>{{ shipment.invoice_ref_number }}</td>
+                <td>{{ shipment.ewaybill_number }}</td>
+            </tr>
+            <tr>
+                <th>Articles</th>
+                <th>Weight</th>
+                <th>Value</th>
+                <th>Type</th>
+                <th colspan="2">Payment Mode</th>
+            </tr>
+            <tr>
+                <td>{{ shipment.no_article }}</td>
+                <td>{{ shipment.actual_weight }} kg</td>
+                <td>₹{{ shipment.value }}</td>
+                <td>{{ shipment.shipment_type }}</td>
+                <td colspan="2">{{ shipment.payment_mode }}</td>
+            </tr>
+        </table>
+
+        <table class="signature-box" width="100%" style="margin-top: 8px;">
+            <tr>
+                <td width="50%"><strong>Consignor Signature</strong></td>
+                <td width="50%"><strong>Consignee Signature</strong></td>
+            </tr>
+        </table>
+
+        <div class="terms">
+            <strong>Terms & Conditions:</strong><br>
+            1. The carrier is not liable for damage/loss unless reported within 24 hours.<br>
+            2. Freight charges are payable as per terms agreed.<br>
+            3. Goods carried at consignee’s risk unless insured.
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endfor %}
+
+</body>
+</html>

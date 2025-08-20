@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<!--<div class="container mt-5">-->
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="consignment_no" placeholder="Enter Consignment No" required>
+        <br>
+        <button class="back-button" type="submit">Search</button>
+        {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    </form>
+</div>
+<style>
+         .container {
+        max-width: 800px;
+        margin: 80px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: 0.5fr 0.5fr;
+        gap: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 9px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        padding: 8px;
+        width: 50%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+     form {
+        display: ruby;
+        grid-template-columns: 0.5fr 0.5fr;
+        gap: 20px;
+
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+{% endblock %}

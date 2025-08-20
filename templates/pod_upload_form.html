@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h3>Upload POD for: {{ shipment.consignment_no }}</h3>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="back-button" type="submit">Upload POD</button>
+    </form>
+
+<style>
+      .container {
+            max-width: 1000px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: ruby;
+        grid-template-columns: 0.5fr 0.5fr;
+        gap: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 9px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 5px;
+        margin-right: 10px;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+{% endblock %}

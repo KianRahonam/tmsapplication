@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; font-size: 12px; }
+        table, th, td { border: 1px solid black; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>Manifest - {{ manifest.manifest_id }}</h2>
+    <p>Vehicle No: {{ manifest.vehicle_no }}</p>
+    <p>Driver Name: {{ manifest.driver_name }}</p>
+    <p>Date: {{ manifest.created_at }}</p>
+    <hr>
+
+    <h4>Shipments</h4>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Consignment No</th>
+                <th>Origin</th>
+                <th>Destination</th>
+                <th>Weight</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in shipments %}
+            <tr>
+                <td>{{ s.consignment_no }}</td>
+                <td>{{ s.origin }}</td>
+                <td>{{ s.destination }}</td>
+                <td>{{ s.charged_weight }} kg</td>
+                <td>{{ s.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

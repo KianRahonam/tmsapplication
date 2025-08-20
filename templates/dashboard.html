@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Saarige</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      background-color: #1ABCFE;
+      padding-top: 20px;
+      color: white;
+      overflow-y: auto;
+      transition: width 0.3s ease;
+    }
+
+    .sidebar.collapsed {
+      width: 70px;
+    }
+
+    .sidebar img {
+      padding: 10px;
+      max-width: 60%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px auto;
+    }
+
+      header img {
+            max-width: 120px;
+            height: auto;
+            margin: 30px;
+            background-color: transparent;
+        }
+
+    .dropdown-btn {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      color: white;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .sidebar.collapsed .label {
+      display: none;
+    }
+
+    .sidebar.collapsed .icon {
+      margin: 0 auto;
+    }
+
+    .icon {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .dropdown-btn:hover {
+      background-color: #34495e;
+    }
+
+    .dropdown-container {
+      display: none;
+      background-color: #34495e;
+      padding-left: 40px;
+    }
+
+    .dropdown-container a {
+      display: block;
+      padding: 10px 0;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      min-height: calc(100vh - 60px);
+      transition: margin-left 0.3s;
+    }
+
+    .main-content.collapsed {
+      margin-left: 70px;
+    }
+
+    .dashboard-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #555;
+    }
+
+    .card p {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #1abc9c;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 0;
+        padding: 10px;
+      }
+
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .sidebar.collapsed {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <img src="{% static 'logo.png' %}" alt="SAARIGE_LOGO">
+
+  <!-- Sidebar Toggle Button -->
+  <button class="dropdown-btn" onclick="toggleSidebar()">
+    <span class="icon"><i class="fas fa-bars"></i></span>
+    <span class="label">Toggle</span>
+  </button>
+
+  <button class="dropdown-btn" onclick="location.href='{% url 'dashboard' %}'">
+    <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
+    <span class="label">Dashboard</span>
+  </button>
+
+  <button class="dropdown-btn">
+    <span class="icon"><i class="fas fa-truck"></i></span>
+    <span class="label">Shipment ▾</span>
+  </button>
+  <div class="dropdown-container">
+    {% if user.usertype == 'Internal' %}
+      <a href="{% url 'shipment_create' %}">Create Shipment</a>
+      <a href="{% url 'shipment_bulk_upload' %}">Bulk Upload</a>
+      <a href="{% url 'consignment_note' %}">Consignment Notes</a>
+      <a href="{% url 'print_label' %}">Label Download</a>
+      <a href="{% url 'pod_upload_search' %}">Upload POD</a>
+    {% endif %}
+    <a href="{% url 'shipment_list' %}">Shipment List</a>
+    <a href="{% url 'bulk_tracking' %}">Track Shipments</a>
+  </div>
+
+  <button class="dropdown-btn">
+    <span class="icon"><i class="fas fa-file-invoice"></i></span>
+    <span class="label">Manifest ▾</span>
+  </button>
+  <div class="dropdown-container">
+    {% if user.usertype == 'Internal' %}
+      <a href="{% url 'create_manifest' %}">Create Manifest</a>
+      <a href="#">Update by Manifest</a>
+    {% endif %}
+    <a href="{% url 'manifest_list' %}">Manifest List</a>
+    {% if user.usertype == 'Internal' %}
+      <a href="#">Print Manifest</a>
+    {% endif %}
+  </div>
+
+  {% if user.usertype == 'Internal' %}
+    <button class="dropdown-btn">
+      <span class="icon"><i class="fas fa-money-bill"></i></span>
+      <span class="label">Billing ▾</span>
+    </button>
+    <div class="dropdown-container">
+      <a href="#">Generate Bill</a>
+      <a href="#">Bill History</a>
+    </div>
+
+    <button class="dropdown-btn">
+      <span class="icon"><i class="fas fa-cogs"></i></span>
+      <span class="label">Masters ▾</span>
+    </button>
+    <div class="dropdown-container">
+      <a href="#">Users</a>
+      <a href="#">Branch</a>
+      <a href="#">Fleets</a>
+    </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <button class="dropdown-btn" onclick="location.href='{% url 'logout' %}'">
+      <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+      <span class="label">Logout</span>
+    </button>
+  {% endif %}
+</div>
+
+<!-- Main Content -->
+<div class="main-content" id="main-content">
+  <div class="dashboard-title">Welcome, {{ user.first_name }} 👋</div>
+
+  <div class="dashboard-grid">
+    <div class="card"><h3>Total Shipments</h3><p>1,248</p></div>
+    <div class="card"><h3>Delivered</h3><p>1,120</p></div>
+    <div class="card"><h3>In Transit</h3><p>98</p></div>
+    <div class="card"><h3>Pending Pickup</h3><p>30</p></div>
+    <div class="card"><h3>Fleet Utilization</h3><p>87%</p></div>
+  </div>
+
+  <footer>&copy; 2025 Bengaluru Nagara Saarige Pvt. Ltd.</footer>
+</div>
+
+<!-- Script -->
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('main-content');
+    sidebar.classList.toggle('collapsed');
+    content.classList.toggle('collapsed');
+  }
+
+  // Dropdown open/close
+  document.querySelectorAll(".dropdown-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
+      const container = btn.nextElementSibling;
+      if (container && container.classList.contains('dropdown-container')) {
+        container.style.display = container.style.display === "block" ? "none" : "block";
+      }
+    });
+  });
+</script>
+</body>
+</html>

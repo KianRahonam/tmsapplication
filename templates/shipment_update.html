@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+    <h2>Update Shipment Details of <strong>{{ shipment.consignment_no }}</strong></h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="details">
+            {{ form.non_field_errors }}
+
+            {% for field in form %}
+                <div {% if field.field.widget.input_type == 'textarea' %}class="full-width"{% endif %}>
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div style="color: red;">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="back-button">Save Changes</button>
+        <button type="button" class="back-button" onclick="window.history.back();">Back</button>
+    </form>
+</div>
+
+<style>
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: 0.5fr 0.5fr;
+        gap: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 9px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        padding: 8px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+   
+   <form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <label for="file">Upload CSV/Excel File:</label>
+  <input type="file" name="file" accept=".csv, .xlsx, .xls" required>
+  <br><br>
+       <button type="submit" class="back-button">Upload</button>
+       <a href="/samplefile.csv/"></a><p>Click here for Sample File</p>
+</form>
+
+</div>
+
+<style>
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 22px;
+    }
+
+    .details {
+        display: grid;
+        grid-template-columns: 0.5fr 0.5fr;
+        gap: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+                padding: 8px;
+        width: 50%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+{% endblock %}

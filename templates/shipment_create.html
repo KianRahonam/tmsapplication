@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% if form.errors %}
+        <div style="color: red;">
+            <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" action="{% url 'shipment_create' %}">
+        {% csrf_token %}
+
+        <!-- Consignment Info -->
+        <div>
+            <label>Date</label>
+            {{ form.date }}
+        </div>
+        <div>
+            <label>Freight</label>
+            {{ form.freight }}
+        </div>
+        <div>
+            <label>Payment Mode</label>
+            {{ form.payment_mode }}
+        </div>
+        <div>
+            <label>Shipment Type</label>
+            {{ form.shipment_type }}
+        </div>
+        <div>
+            <label>Vehicle No</label>
+            {{ form.vehicle_no }}
+        </div>
+        <div>
+            <label>Origin</label>
+            {{ form.origin }}
+        </div>
+        <div>
+            <label>Origin Pincode</label>
+            {{ form.origin_pin }}
+        </div>
+        <div>
+            <label>Destination</label>
+            {{ form.destination }}
+        </div>
+        <div>
+            <label>Destination Pincode</label>
+            {{ form.destination_pin }}
+        </div>
+        <div>
+            <label>Driver Details</label>
+            {{ form.driver_details }}
+        </div>
+
+        <!-- Consignor -->
+        <div class="full-width"><strong>Consignor Details</strong></div>
+        <div>
+            <label>Consignor Name</label>
+            {{ form.consignor_name }}
+        </div>
+        <div class="full-width">
+            <label>Consignor Address</label>
+            {{ form.consignor_address }}
+        </div>
+        <div>
+            <label>Consignor GST</label>
+            {{ form.consignor_gst }}
+        </div>
+        <div>
+            <label>Consignor Contact</label>
+            {{ form.consignor_contact }}
+        </div>
+
+        <!-- Consignee -->
+        <div class="full-width"><strong>Consignee Details</strong></div>
+        <div>
+            <label>Consignee Name</label>
+            {{ form.consignee_name }}
+        </div>
+        <div class="full-width">
+            <label>Consignee Address</label>
+            {{ form.consignee_address }}
+        </div>
+        <div>
+            <label>Consignee GST</label>
+            {{ form.consignee_gst }}
+        </div>
+        <div>
+            <label>Consignee Contact</label>
+            {{ form.consignee_contact }}
+        </div>
+
+        <!-- Invoice -->
+        <div>
+            <label>Invoice Ref No</label>
+            {{ form.invoice_ref_number }}
+        </div>
+        <div>
+            <label>E-Waybill Number</label>
+            {{ form.ewaybill_number }}
+        </div>
+        <div>
+            <label>Value</label>
+            {{ form.value }}
+        </div>
+        <div>
+            <label>Pack Type</label>
+            {{ form.pack_type }}
+        </div>
+        <div>
+            <label>No of Articles</label>
+            {{ form.no_article }}
+        </div>
+        <div>
+            <label>Actual Weight</label>
+            {{ form.actual_weight }}
+        </div>
+        <div>
+            <label>Charged Weight</label>
+            {{ form.charged_weight }}
+        </div>
+        <div>
+            <label>Status</label>
+            {{ form.status }}
+        </div>
+        <div>
+            <label>Estimated Delivery Date</label>
+            {{ form.estimated_delivery_date }}
+        </div>
+
+        <div class="full-width"><strong>Appointment Details</strong></div>
+        <div>
+            <label>Is This Appointment Delivery</label>
+            {{ form.appointment_delivery }}
+
+            <label>Appointment Date</label>
+            {{ form.appointment_date }}
+        </div>
+
+        <div class="full-width"><strong>Remark</strong></div>
+        <div>
+            <label>Remark about the Shipment</label>
+            {{ form.remark }}
+        </div>
+
+        <!-- Submit -->
+        <button type="submit">Create</button>
+    </form>
+</div>
+
+<style>
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Adjusted to use two equal columns */
+        gap: 20px; /* Space between grid items */
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px; /* Increased font size for better readability */
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box; /* Ensure padding is included in width */
+    }
+
+    textarea {
+        height: 40px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1; /* Make full-width elements span both columns */
+    }
+
+    button {
+        background-color: #ff6f61;
+        width: 10%; /* Make button full width */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        grid-column: 1 / -1; /* Make button span both columns */
+    }
+
+    button:hover {
+        background-color: #e65b50;
+    }
+
+    input[type="checkbox"] {
+        cursor: pointer;
+    }
+</style>
+{% endblock %}

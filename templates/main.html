@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVE Transport</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Questrial&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Questrial', Arial, sans-serif;
+            background-color: #f8f8f8;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 5px 5px 0px 0px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: transparent;
+            height: 60px;
+        }
+
+        header img {
+            max-width: 120px;
+            height: auto;
+            margin: 30px;
+            background-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 30px;
+        }
+
+        nav button {
+            background-color: dimgrey;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        nav button:hover {
+            background-color: #e65a50;
+        }
+
+        .container {
+            background-image: url("{% static 'background.jpg' %}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            min-height: calc(100vh - 70px);
+            display: flex;
+            flex-direction: column; /* stack vertically */
+            align-items: center;
+            justify-content: center;
+
+        }
+
+        .content-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .hero {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 4rem 2rem;
+            max-width: 600px;
+            border-radius: 20px 0px 0px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero h2 {
+            color: #2f5495;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .forms {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            max-width: 400px;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0px 20px 20px 0px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .form-card h3 {
+            color: white;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .form-card input {
+            width: 100%;
+            padding: 0.7rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #000;
+        }
+
+        .form-card input::placeholder {
+            color: #333;
+        }
+
+        .form-card button {
+            width: 45%;
+            padding: 0.7rem;
+            border: none;
+            background-color: #ff6f61;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 2px;
+            transition: background-color 0.3s;
+        }
+
+        .form-card button:hover {
+            background-color: #e65a50;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        .customer-logos {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem 17.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: 1rem auto;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .customer-logos img {
+            max-height: 50px;
+            object-fit: contain;
+            opacity: 0.9;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .customer-logos img:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        footer {
+            background-color: #0091d6;
+            color: #fff;
+            text-align: center;
+            padding: 0.5rem 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .content-row {
+                flex-direction: column;
+            }
+
+            .hero {
+                text-align: center;
+                border-radius: 20px 20px 0 0;
+                margin-bottom: 1rem;
+            }
+
+            .form-card {
+                border-radius: 0 0 20px 20px;
+            }
+        }
+        .features {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    flex-wrap: wrap;
+
+    /* Match width with hero/form */
+    max-width: 1030px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.feature {
+    text-align: center;
+    flex: 1 1 200px;
+}
+
+.feature h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.feature p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+    </style>
+</head>
+
+<body>
+<header>
+    <img src="{% static 'logo.png' %}" alt="SVE Transport">
+    <nav>
+        <button onclick="location.href='#about'">About</button>
+        <button onclick="location.href='#contact'">Contact</button>
+        <a href="{% url 'public_tracking' %}"><button type="button">Track</button></a>
+    </nav>
+</header>
+
+<div class="container">
+    <div class="content-row">
+        <div class="hero">
+            <h2>Welcome to SVE TRANSPORT</h2>
+            <p>Experience seamless transportation solutions that connect you to your destination with reliability and comfort.</p>
+        </div>
+
+        <div class="forms">
+            <div class="form-card">
+                <h3>Login</h3>
+                <form method="POST" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <input type="text" placeholder="Username" name="username" required>
+                    <input type="password" placeholder="Password" name="password" required>
+                    <center>
+                        <button type="submit">Login</button>
+                        <button type="button" onclick="location.href='{% url 'register' %}'">Register</button>
+                    </center>
+                    {% for message in messages %}
+                        <p class="error-message">{{ message }}</p>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!--    &lt;!&ndash; Logos BELOW hero & form &ndash;&gt;-->
+<!--    <div class="customer-logos">-->
+<!--        <img src="{% static 'customer1.png' %}" alt="Customer 1">-->
+<!--        <img src="{% static 'customer2.png' %}" alt="Customer 2">-->
+<!--        <img src="{% static 'customer3.png' %}" alt="Customer 3">-->
+<!--        <img src="{% static 'customer4.png' %}" alt="Customer 4">-->
+<!--    </div>-->
+    <div class="features">
+    <div class="feature">
+        <h3>🚀 Fast & Reliable</h3>
+        <p>Experience quick load times and smooth performance.</p>
+    </div>
+    <div class="feature">
+        <h3>🔒 Secure Data</h3>
+        <p>Your information is encrypted and safely stored.</p>
+    </div>
+    <div class="feature">
+        <h3>📱 Mobile Friendly</h3>
+        <p>Access the application from any device seamlessly.</p>
+    </div>
+    <div class="feature">
+        <h3>⚙️ Easy Integration</h3>
+        <p>Connect with your existing tools effortlessly.</p>
+    </div>
+</div>
+</div>
+
+<footer>
+    <p>&copy; 2025 SVE Transports. All Rights Reserved.</p>
+</footer>
+</body>
+</html>

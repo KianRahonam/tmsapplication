@@ -1,0 +1,253 @@
+{% load static %}
+{% block content %}
+
+<div class="container mt-5 mb-5">
+    <h2 class="text-center mb-4">Bulk Consignment Tracking</h2>
+
+    <!-- Search Form -->
+    <form method="get" action="{% url 'public_tracking_status' %}" class="mb-4">
+        <div class="input-group">
+            <textarea name="consignments" rows="2" class="form-control" placeholder="Enter consignment numbers separated by space or comma">{{ request.GET.consignments }}</textarea>
+            <button type="submit" class="btn btn-primary px-4">Track</button>
+        </div>
+    </form>
+
+    {% for shipment in shipments %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center"
+             style="background-color: {% if shipment.status == 'Delivered' %}#28a745{% else %}#4a6fa5{% endif %}; color: white;">
+            <strong>Consignment #: {{ shipment.consignment_no }}  |  {{ shipment.status }}</strong>
+
+            {% if shipment.pod_scan %}
+                <a href="{{ shipment.pod_scan.url }}" target="_blank" class="text-decoration-none text-light">View POD</a>
+            {% endif %}
+            <button class="btn btn-sm btn-light toggle-btn" data-target="details-{{ forloop.counter }}">+</button>
+        </div>
+
+        <div id="details-{{ forloop.counter }}" class="card-body shipment-details" style="display: none;">
+            <!-- Shipment Overview -->
+            <table class="table table-bordered table-sm mb-3" style="width: 100%;">
+                <thead style="background-color: #e9f2ff;">
+                    <tr><th colspan="4" class="text-center">Shipment Overview</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Date</th>
+                        <td>{{ shipment.date }}</td>
+                        <th style="background-color: #f8f9fa;">Status</th>
+                        <td style="background-color: {% if shipment.status == 'Delivered' %}#d4edda{% else %}#fff3cd{% endif %};">
+                            {{ shipment.status }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Origin</th>
+                        <td>{{ shipment.origin }} - {{ shipment.origin_pin }}</td>
+                        <th style="background-color: #f8f9fa;">Destination</th>
+                        <td>{{ shipment.destination }} - {{ shipment.destination_pin }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Vehicle No</th>
+                        <td>{{ shipment.vehicle_no }}</td>
+                        <th style="background-color: #f8f9fa;">Driver</th>
+                        <td>{{ shipment.driver_details }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Shipment Type</th>
+                        <td>{{ shipment.shipment_type }}</td>
+                        <th style="background-color: #f8f9fa;">Pack Type</th>
+                        <td>{{ shipment.pack_type }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Invoice No</th>
+                        <td>{{ shipment.invoice_ref_number }}</td>
+                        <th style="background-color: #f8f9fa;">E-Way Bill</th>
+                        <td>{{ shipment.ewaybill_number|default:"-" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Consignor/Consignee -->
+            <table class="table table-bordered table-sm mb-3" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th colspan="2" class="text-center" style="background-color: #e9f2ff;">Consignor Details</th>
+                        <th colspan="2" class="text-center" style="background-color: #e9f2ff;">Consignee Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Name</th>
+                        <td>{{ shipment.consignor_name }}</td>
+                        <th style="background-color: #f8f9fa;">Name</th>
+                        <td>{{ shipment.consignee_name }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Address</th>
+                        <td>{{ shipment.consignor_address }}</td>
+                        <th style="background-color: #f8f9fa;">Address</th>
+                        <td>{{ shipment.consignee_address }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">GST</th>
+                        <td>{{ shipment.consignor_gst|default:"-" }}</td>
+                        <th style="background-color: #f8f9fa;">GST</th>
+                        <td>{{ shipment.consignee_gst|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Contact</th>
+                        <td>{{ shipment.consignor_contact }}</td>
+                        <th style="background-color: #f8f9fa;">Contact</th>
+                        <td>{{ shipment.consignee_contact }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Shipment Summary -->
+            <table class="table table-bordered table-sm" style="width: 100%;">
+                <thead style="background-color: #e9f2ff;">
+                    <tr><th colspan="4" class="text-center">Shipment Summary</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Articles</th>
+                        <td>{{ shipment.no_article }}</td>
+                        <th style="background-color: #f8f9fa;">Weight</th>
+                        <td>{{ shipment.actual_weight }} kg</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Charged Weight</th>
+                        <td>{{ shipment.charged_weight }} kg</td>
+                        <th style="background-color: #f8f9fa;">Value</th>
+                        <td>₹{{ shipment.value }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Freight</th>
+                        <td>₹{{ shipment.freight }}</td>
+                        <th style="background-color: #f8f9fa;">Payment Mode</th>
+                        <td>{{ shipment.payment_mode }}</td>
+                    </tr>
+                    <tr>
+                        <th style="background-color: #f8f9fa;">Est. Delivery</th>
+                        <td>{{ shipment.estimated_delivery_date|default:"-" }}</td>
+                        <th style="background-color: #f8f9fa;">Delivered On</th>
+                        <td>{{ shipment.delivery_date|default:"-" }}</td>
+                    </tr>
+                    {% if shipment.pod_scan %}
+                    <tr>
+                        <th style="background-color: #f8f9fa;">POD</th>
+                        <td colspan="3"><a href="{{ shipment.pod_scan.url }}" target="_blank" class="text-decoration-none text-primary">View POD</a></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% empty %}
+        <p class="text-muted text-center">No matching consignments found.</p>
+    {% endfor %}
+</div>
+
+<!-- Toggle JS -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(btn.dataset.target);
+                const isVisible = target.style.display === 'block';
+                target.style.display = isVisible ? 'none' : 'block';
+                btn.textContent = isVisible ? '+' : '−';
+            });
+        });
+    });
+</script>
+
+<!-- Styling -->
+<style>
+    html, body {
+        background-image: url("https://static.vecteezy.com/system/resources/previews/000/549/810/original/vector-abstract-technology-background-technology-digital-world-of-business-information-futuristic-blue-virtual-graphic-interface.jpg");
+        background-size: cover;
+        background-repeat: repeat;
+        background-position: center;
+        height: calc(75vh - 10px); /* Fill screen excluding header */
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f8f8f8;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 80px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        color: #2c3e50;
+        font-weight: 700;
+    }
+
+    textarea {
+        padding: 8px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 5px;
+    }
+
+    .btn-primary:hover {
+        background-color: #e65b50;
+    }
+
+    .table-sm th, .table-sm td {
+        padding: 8px 12px !important;
+    }
+
+    .card-header {
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .toggle-btn {
+        width: 28px;
+        height: 28px;
+        text-align: center;
+        padding: 0;
+        border-radius: 4px;
+    }
+
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        width: 100%; /* Ensures the table takes full width of the container */
+    }
+
+    th {
+        font-weight: 600;
+    }
+
+    td {
+        background-color: white;
+    }
+
+    .table-bordered th, .table-bordered td {
+        border: 1px solid #dee2e6 !important;
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SVE Transports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      color: #ff6f61;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #c9c9c9;
+      height: 60px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+
+    header img {
+      max-height: 40px;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #000;
+    }
+
+    nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.track_form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.searchbox {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.track_button {
+  background-color: dimgrey;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.track_button:hover {
+  background-color: #e65a50;
+}
+
+
+    .username {
+      font-weight: bold;
+      color: #000;
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar {
+      height: 100vh;
+      width: 70px; /* collapsed by default on desktop */
+      position: fixed;
+      top: 60px;
+      left: 0;
+      background-color: #1ABCFE;
+      padding-top: 10px;
+      color: white;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+      z-index: 2000;
+    }
+
+    .sidebar.expanded {
+      width: 250px;
+    }
+
+    .sidebar.mobile-show {
+      left: 0;
+      width: 220px;
+    }
+
+    .sidebar .dropdown-btn,
+    .sidebar a {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      color: white;
+      text-decoration: none;
+      background: none;
+      border: none;
+      text-align: left;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar:not(.expanded) .dropdown-btn {
+      justify-content: center;
+      padding: 12px 0;
+    }
+
+    .sidebar:not(.expanded) .label {
+      display: none;
+    }
+
+    .sidebar a:hover,
+    .dropdown-btn:hover {
+      background-color: #34495e;
+    }
+
+    .dropdown-container {
+      display: none;
+      background-color: #34495e;
+      padding-left: 20px;
+    }
+
+    .sidebar .icon {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      margin-left: 50px; /* collapsed by default */
+      padding: 20px;
+      margin-top: 40px;
+      margin-right: 1px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .main-content.shift {
+      margin-left: 220px;
+    }
+
+    .main-content.mobile-shift {
+      margin-left: 220px;
+    }
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  background-color: #c9c9c9;
+  color: #fff;
+  z-index: 999;
+  padding: 0px 0; /* Reduced padding */
+  font-size: 10px; /* Optional: Adjust font size if needed */
+}
+
+
+    .page-header {
+      background-color: #e0e0e0;
+      padding: 15px 20px;
+      border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 60px;
+      z-index: 50;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .page-body {
+      background: white;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .hide-on-mobile {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      .hide-on-mobile {
+        display: none;
+      }
+
+      .sidebar {
+        left: -220px; /* hidden by default */
+        width: 220px;
+      }
+
+      .sidebar.mobile-show {
+        left: 0;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .main-content.mobile-shift {
+        margin-left: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="{% static 'logo.png' %}" alt="SVE TRANSPORTS" />
+  <div class="hamburger" onclick="toggleSidebarMobile()">
+    <i class="fas fa-bars"></i>
+  </div>
+  <nav>
+    {% if user.is_authenticated %}
+      <span class="username">{{ user.first_name }} {{ user.last_name }}</span>
+    {% endif %}
+  </nav>
+</header>
+
+<div class="sidebar" id="sidebar">
+  <button class="dropdown-btn" onclick="toggleSidebar()">
+    <span class="icon"><i class="fas fa-bars"></i></span>
+    <span class="label">Toggle</span>
+  </button>
+
+  <button class="dropdown-btn" onclick="location.href='{% url 'dashboard' %}'">
+    <span class="icon"><i class="fas fa-tachometer-alt"></i></span>
+    <span class="label">Dashboard</span>
+  </button>
+
+  <button class="dropdown-btn">
+    <span class="icon"><i class="fas fa-truck"></i></span>
+    <span class="label">Shipment ▾</span>
+  </button>
+  <div class="dropdown-container">
+    {% if user.usertype == 'Internal' %}
+      <a href="{% url 'shipment_create' %}">Create Shipment</a>
+      <a href="{% url 'shipment_bulk_upload' %}">Bulk Upload</a>
+      <a href="{% url 'consignment_note' %}">Consignment Notes</a>
+      <a href="{% url 'print_label' %}">Label Download</a>
+      <a href="{% url 'pod_upload_search' %}">Upload POD</a>
+    {% endif %}
+    <a href="{% url 'shipment_list' %}">Shipment List</a>
+    <a href="{% url 'bulk_tracking' %}">Track Shipments</a>
+  </div>
+
+  <button class="dropdown-btn">
+    <span class="icon"><i class="fas fa-file-invoice"></i></span>
+    <span class="label">Manifest ▾</span>
+  </button>
+  <div class="dropdown-container">
+    {% if user.usertype == 'Internal' %}
+      <a href="{% url 'create_manifest' %}">Create Manifest</a>
+      <a href="#">Update by Manifest</a>
+    {% endif %}
+    <a href="{% url 'manifest_list' %}">Manifest List</a>
+    {% if user.usertype == 'Internal' %}
+      <a href="#">Print Manifest</a>
+    {% endif %}
+  </div>
+
+  {% if user.usertype == 'Internal' %}
+    <button class="dropdown-btn">
+      <span class="icon"><i class="fas fa-money-bill"></i></span>
+      <span class="label">Billing ▾</span>
+    </button>
+    <div class="dropdown-container">
+      <a href="#">Generate Bill</a>
+      <a href="#">Bill History</a>
+    </div>
+
+    <button class="dropdown-btn">
+      <span class="icon"><i class="fas fa-cogs"></i></span>
+      <span class="label">Masters ▾</span>
+    </button>
+    <div class="dropdown-container">
+      <a href="#">Users</a>
+      <a href="#">Branch</a>
+      <a href="#">Fleets</a>
+    </div>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    <button class="dropdown-btn" onclick="location.href='{% url 'logout' %}'">
+      <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+      <span class="label">Logout</span>
+    </button>
+  {% endif %}
+</div>
+
+
+<div class="main-content" id="main-content">
+  <div class="page-header">
+    <h1 class="page-title">{{ pagename }}</h1>
+  </div>
+  <div class="page-body">
+    {% block content %}
+    <!-- Page content here -->
+    {% endblock %}
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 SVE Transports All Rights Reserved.</p>
+</footer>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('main-content');
+    if (window.innerWidth > 768) {
+      sidebar.classList.toggle('expanded');
+      content.classList.toggle('shift');
+    }
+  }
+
+  function toggleSidebarMobile() {
+    const sidebar = document.getElementById('sidebar');
+    const content = document.getElementById('main-content');
+    sidebar.classList.toggle('mobile-show');
+    content.classList.toggle('mobile-shift');
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdowns = document.querySelectorAll(".dropdown-btn");
+    dropdowns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const container = btn.nextElementSibling;
+        const isShown = container && container.style.display === "block";
+        document.querySelectorAll(".dropdown-container").forEach(dc => dc.style.display = "none");
+        if (container && container.classList.contains("dropdown-container")) {
+          container.style.display = isShown ? "none" : "block";
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

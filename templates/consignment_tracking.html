@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+    <h2>Track Consignments</h2>
+
+    <form method="GET" action="{% url 'bulk_tracking' %}">
+        <label for="consignments">Enter Consignment Numbers (space-separated):</label>
+        <textarea name="consignments" id="consignments" rows="4" cols="50" placeholder="CN-25001 CN-25002 CN-25003" required></textarea><br><br>
+        <button type="submit" class="back-button">Track</button>
+    </form>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin: 80px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 22px;
+        text-align: center;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    textarea {
+        padding: 8px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+{% endblock %}

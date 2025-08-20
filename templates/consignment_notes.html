@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+   
+    <form method="get" action="{% url 'download_consignment_note' %}">
+        <label for="consignments">Enter Consignment Numbers (space-separated):</label>
+        <textarea name="consignments" id="consignments" rows="4" cols="50" placeholder="CN-251001 CN-251002" required></textarea><br><br>
+        <button type="submit" class="back-button">Download Consignment Notes</button>
+    </form>
+</div>
+
+<style>
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 22px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    textarea {
+        padding: 8px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+{% endblock %}

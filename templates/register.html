@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saarige - Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+
+        header {
+
+            position: fixed;
+            width: 98%;
+
+            color: #ff6f61;
+            padding: 0.1rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #c9c9c9;
+        }
+
+        header img {
+            max-width: 13%;
+            height: auto;
+        }
+
+        nav {
+            display: flex;
+            gap: 1rem;
+        }
+
+        nav button {
+            background-color: dimgrey;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        nav button:hover {
+            background-color: #e65a50;
+        }
+
+        .container {
+            display: flex;
+
+            padding: 2rem;
+        }
+
+        .left-side {
+            flex: 1;
+            padding-right: 2rem;
+        }
+
+        .right-side {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .form-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            padding: 3rem;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-card h3 {
+            color: #000;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-card input,
+        .form-card select {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-card button {
+            padding: 0.5rem;
+            border: none;
+            background-color: #ff6f61;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .form-card button:hover {
+            background-color: #e65a50;
+        }
+
+        footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+            margin-top: 1rem;
+            text-align: center;
+            background-color: #c9c9c9;
+            color: #fff;
+            padding: 0.4rem 0;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{% static 'logo.png' %}" alt="SAARIGE">
+        <nav>
+            <button onclick="location.href='/'">Home</button>
+            <button onclick="location.href='#about'">About</button>
+            <button onclick="location.href='#contact'">Contact</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="left-side">
+            <!-- Optional content/image -->
+        </div>
+        <div class="right-side">
+            <div class="form-card">
+                <h3>User Registration</h3>
+                <form method="POST" action="{% url 'register_user' %}">
+                    {% csrf_token %}
+                    <input type="text" name="username" placeholder="Username" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="password1" placeholder="Password" required>
+                    <input type="password" name="password2" placeholder="Confirm Password" required>
+                    <input type="text" name="phone_number" placeholder="Phone Number" required>
+                    <input type="text" name="company_name" placeholder="Company Name" required>
+
+                    <select name="gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                    </select>
+
+                    <select name="role" required>
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Superviser">Superviser</option>
+                        <option value="Co-ordinator">Co-ordinator</option>
+                        <option value="Executive">Executive</option>
+                    </select>
+
+                    <button type="submit">Register</button>
+
+                    {% for message in messages %}
+                    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+                        <p style="color: red;">{{ message }}</p>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Bangalore Nagara Saarige Pvt. Ltd. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

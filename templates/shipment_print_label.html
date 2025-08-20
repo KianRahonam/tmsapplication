@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+
+<form method="post" action="{% url 'download_labels' %}">
+    {% csrf_token %}
+    <label>Enter Consignment Numbers:</label>
+    <textarea name="consignments" rows="4" cols="50" placeholder="CN-25001 CN-25002"></textarea>
+    <button type="submit" class="back-button">Download Labels</button>
+</form>
+</div>
+
+<style>
+
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 22px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    textarea {
+        padding: 8px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .back-button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .back-button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+
+{% endblock %}

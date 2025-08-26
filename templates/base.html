@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Saarige - Your Transport Partner</title>
+  <title>SVE TRANSPORT - Your Transport Partner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Font Awesome for icons -->
@@ -45,39 +45,37 @@
     }
 
     nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-.track_form {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+    .track_form {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-.searchbox {
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
+    .searchbox {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
 
-.track_button {
-  background-color: dimgrey;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1rem;
-}
+    .track_button {
+      background-color: dimgrey;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
 
-.track_button:hover {
-  background-color: #e65a50;
-}
-
+    .track_button:hover {
+      background-color: #e65a50;
+    }
 
     .username {
       font-weight: bold;
@@ -167,19 +165,19 @@
     .main-content.mobile-shift {
       margin-left: 220px;
     }
-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  background-color: #c9c9c9;
-  color: #fff;
-  z-index: 999;
-  padding: 5px 0; /* Reduced padding */
-  font-size: 14px; /* Optional: Adjust font size if needed */
-}
 
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      background-color: #c9c9c9;
+      color: #fff;
+      z-index: 999;
+      padding: 5px 0; /* Reduced padding */
+      font-size: 14px; /* Optional: Adjust font size if needed */
+    }
 
     .page-header {
       background-color: #e0e0e0;
@@ -202,7 +200,7 @@ footer {
       padding: 20px;
       border-radius: 6px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      margin-bottom:60px;
+      margin-bottom: 60px;
     }
 
     .hide-on-mobile {
@@ -240,8 +238,8 @@ footer {
 <body>
 
 <header>
-  <img src="{% static 'logo.png' %}" alt="SAARIGE" />
-  <div class="hamburger" onclick="toggleSidebarMobile()">
+  <img src="{% static 'logo.png' %}" alt="SVE TRANSPORT" />
+  <div class="hamburger" onclick="toggleSidebarMobile()" aria-label="Toggle sidebar">
     <i class="fas fa-bars"></i>
   </div>
   <nav>
@@ -251,7 +249,7 @@ footer {
   </nav>
 </header>
 
-<div class="sidebar" id="sidebar">
+<aside class="sidebar" id="sidebar" aria-label="Sidebar Navigation">
   <button class="dropdown-btn" onclick="toggleSidebar()">
     <span class="icon"><i class="fas fa-bars"></i></span>
     <span class="label">Toggle</span>
@@ -291,6 +289,14 @@ footer {
     {% if user.usertype == 'Internal' %}
       <a href="#">Print Manifest</a>
     {% endif %}
+    {% if user.usertype == 'Internal' %}
+    <a href="{% url 'trip-create' %}">Create Trip-Vendor</a>
+    <a href="#">Update Trip</a>
+  {% endif %}
+  <a href="{% url 'trip-list' %}">Trip List Trip-Vendor</a>
+  {% if user.usertype == 'Internal' %}
+    <a href="#">Manage Trips - Trip-Vendor</a>
+  {% endif %}
   </div>
 
   {% if user.usertype == 'Internal' %}
@@ -303,15 +309,40 @@ footer {
       <a href="#">Bill History</a>
     </div>
 
-    <button class="dropdown-btn">
-      <span class="icon"><i class="fas fa-cogs"></i></span>
-      <span class="label">Masters ▾</span>
-    </button>
-    <div class="dropdown-container">
-      <a href="#">Users</a>
-      <a href="#">Branch</a>
-      <a href="#">Fleets</a>
+  <button class="dropdown-btn" aria-expanded="false">
+    <span class="icon"><i class="fas fa-cogs"></i></span>
+    <span class="label">Masters ▾</span>
+  </button>
+  <div class="dropdown-container">
+
+    <!-- Users Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Users ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'user_add' %}">➕ Add User</a>
+      <a href="{% url 'user_manage' %}">📋 Manage Users</a>
     </div>
+
+    <!-- Branch Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Branch ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'branch_add' %}">➕ Add Branch</a>
+      <a href="{% url 'branch_manage' %}">📋 Manage Branches</a>
+    </div>
+
+    <!-- Fleets Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Fleets ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'fleet_add' %}">➕ Add Fleet</a>
+      <a href="{% url 'fleet_manage' %}">📋 Manage Fleets</a>
+    </div>
+
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Vendors ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'fleet_add' %}">➕ Add Vendors</a>
+      <a href="{% url 'fleet_manage' %}">📋 Manage Vendors</a>
+    </div>
+
+  </div>
   {% endif %}
 
   {% if user.is_authenticated %}
@@ -320,10 +351,9 @@ footer {
       <span class="label">Logout</span>
     </button>
   {% endif %}
-</div>
+</aside>
 
-
-<div class="main-content" id="main-content">
+<main class="main-content" id="main-content">
   <div class="page-header">
     <h1 class="page-title">{{ pagename }}</h1>
   </div>
@@ -332,10 +362,10 @@ footer {
     <!-- Page content here -->
     {% endblock %}
   </div>
-</div>
+</main>
 
 <footer>
-  <p>&copy; 2025 Bengaluru Nagara Saarige Pvt. Ltd. All Rights Reserved.</p>
+  <p>&copy; 2025 SVE TRANSPORT All Rights Reserved.</p>
 </footer>
 
 <script>

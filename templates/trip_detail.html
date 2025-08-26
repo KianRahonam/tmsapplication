@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Trip Details - {{ trip.trip_id }}</h2>
+
+<table border="1" cellpadding="8">
+    <tr><th>Trip ID</th><td>{{ trip.trip_id }}</td></tr>
+    <tr><th>Vendor</th><td>{{ trip.vendor.vendor_name }}</td></tr>
+    <tr><th>Vehicle Type</th><td>{{ trip.vehicle_type }}</td></tr>
+    <tr><th>Capacity</th><td>{{ trip.vehicle_capacity }}</td></tr>
+    <tr><th>From</th><td>{{ trip.from_location }}</td></tr>
+    <tr><th>Destination</th><td>{{ trip.destination }}</td></tr>
+    <tr><th>KMs</th><td>{{ trip.kilometer }}</td></tr>
+    <tr><th>Total Bill</th><td>{{ trip.total_bill_amount }}</td></tr>
+    <tr><th>Status</th><td>{{ trip.status }}</td></tr>
+    <tr><th>Created At</th><td>{{ trip.created_at }}</td></tr>
+</table>
+
+<br>
+<a href="{% url 'trip-update' trip.id %}">Edit Trip</a> |
+<a href="{% url 'trip-list' %}">Back to Trip List</a>
+{% endblock %}

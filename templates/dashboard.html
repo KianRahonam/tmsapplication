@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - Saarige</title>
+  <title>Dashboard - SVE TRANSPORT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -13,7 +13,7 @@
       background-color: #f4f4f4;
     }
 
-    .sidebar {
+    nav.sidebar {
       height: 100vh;
       width: 250px;
       position: fixed;
@@ -24,11 +24,11 @@
       transition: width 0.3s ease;
     }
 
-    .sidebar.collapsed {
+    nav.sidebar.collapsed {
       width: 70px;
     }
 
-    .sidebar img {
+    nav.sidebar img {
       padding: 10px;
       max-width: 80%;
       height: auto;
@@ -51,11 +51,11 @@
       cursor: pointer;
     }
 
-    .sidebar.collapsed .label {
+    nav.sidebar.collapsed .label {
       display: none;
     }
 
-    .sidebar.collapsed .icon {
+    nav.sidebar.collapsed .icon {
       margin: 0 auto;
     }
 
@@ -83,14 +83,14 @@
       font-size: 14px;
     }
 
-    .main-content {
+    main.main-content {
       margin-left: 250px;
       padding: 20px;
       min-height: calc(100vh - 60px);
       transition: margin-left 0.3s;
     }
 
-    .main-content.collapsed {
+    main.main-content.collapsed {
       margin-left: 70px;
     }
 
@@ -111,7 +111,7 @@
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      transition: 0.3s;
+      transition: transform 0.3s;
     }
 
     .card h3 {
@@ -139,29 +139,29 @@
     }
 
     @media (max-width: 768px) {
-      .main-content {
+      main.main-content {
         margin-left: 0;
         padding: 10px;
       }
 
-      .sidebar {
+      nav.sidebar {
         position: relative;
         width: 100%;
         height: auto;
       }
 
-      .sidebar.collapsed {
+      nav.sidebar.collapsed {
         width: 100%;
       }
     }
   </style>
 </head>
 <body>
-<div class="sidebar" id="sidebar">
-  <img src="{% static 'logo.png' %}" alt="SAARIGE_LOGO">
+<nav class="sidebar" id="sidebar">
+  <img src="{% static 'logo.png' %}" alt="SVE TRANSPORT">
 
   <!-- Sidebar Toggle Button -->
-  <button class="dropdown-btn" onclick="toggleSidebar()">
+  <button class="dropdown-btn" onclick="toggleSidebar()" aria-expanded="false">
     <span class="icon"><i class="fas fa-bars"></i></span>
     <span class="label">Toggle</span>
   </button>
@@ -171,7 +171,7 @@
     <span class="label">Dashboard</span>
   </button>
 
-  <button class="dropdown-btn">
+  <button class="dropdown-btn" aria-expanded="false">
     <span class="icon"><i class="fas fa-truck"></i></span>
     <span class="label">Shipment ▾</span>
   </button>
@@ -200,27 +200,54 @@
     {% if user.usertype == 'Internal' %}
       <a href="#">Print Manifest</a>
     {% endif %}
+    {% if user.usertype == 'Internal' %}
+    <a href="{% url 'trip-create' %}">Create Trip to Vendor</a>
+    <a href="#">Update Trip-Vendor</a>
+  {% endif %}
+  <a href="{% url 'trip-list' %}">Trip List -Vendor</a>
+  {% if user.usertype == 'Internal' %}
+    <a href="#">Manage Trips - Vendor</a>
+  {% endif %}
   </div>
 
   {% if user.usertype == 'Internal' %}
-    <button class="dropdown-btn">
-      <span class="icon"><i class="fas fa-money-bill"></i></span>
-      <span class="label">Billing ▾</span>
-    </button>
-    <div class="dropdown-container">
-      <a href="#">Generate Bill</a>
-      <a href="#">Bill History</a>
+  <button class="dropdown-btn" aria-expanded="false">
+    <span class="icon"><i class="fas fa-money-bill"></i></span>
+    <span class="label">Billing ▾</span>
+  </button>
+  <div class="dropdown-container">
+    <a href="#">Generate Bill</a>
+    <a href="#">Bill History</a>
+  </div>
+
+  <button class="dropdown-btn" aria-expanded="false">
+    <span class="icon"><i class="fas fa-cogs"></i></span>
+    <span class="label">Masters ▾</span>
+  </button>
+  <div class="dropdown-container">
+
+    <!-- Users Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Users ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'user_add' %}">➕ Add User</a>
+      <a href="{% url 'user_manage' %}">📋 Manage Users</a>
     </div>
 
-    <button class="dropdown-btn">
-      <span class="icon"><i class="fas fa-cogs"></i></span>
-      <span class="label">Masters ▾</span>
-    </button>
-    <div class="dropdown-container">
-      <a href="#">Users</a>
-      <a href="#">Branch</a>
-      <a href="#">Fleets</a>
+    <!-- Branch Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Branch ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'branch_add' %}">➕ Add Branch</a>
+      <a href="{% url 'branch_manage' %}">📋 Manage Branches</a>
     </div>
+
+    <!-- Fleets Submenu -->
+    <button class="dropdown-btn sub-btn" aria-expanded="false">Fleets ▾</button>
+    <div class="dropdown-container sub-container">
+      <a href="{% url 'fleet_add' %}">➕ Add Fleet</a>
+      <a href="{% url 'fleet_manage' %}">📋 Manage Fleets</a>
+    </div>
+
+  </div>
   {% endif %}
 
   {% if user.is_authenticated %}
@@ -229,10 +256,10 @@
       <span class="label">Logout</span>
     </button>
   {% endif %}
-</div>
+</nav>
 
 <!-- Main Content -->
-<div class="main-content" id="main-content">
+<main class="main-content" id="main-content">
   <div class="dashboard-title">Welcome, {{ user.first_name }} 👋</div>
 
   <div class="dashboard-grid">
@@ -243,8 +270,8 @@
     <div class="card"><h3>Fleet Utilization</h3><p>87%</p></div>
   </div>
 
-  <footer>&copy; 2025 Bengaluru Nagara Saarige Pvt. Ltd.</footer>
-</div>
+  <footer>&copy; 2025 SVE TRANSPORT</footer>
+</main>
 
 <!-- Script -->
 <script>
@@ -253,6 +280,10 @@
     const content = document.getElementById('main-content');
     sidebar.classList.toggle('collapsed');
     content.classList.toggle('collapsed');
+    const isCollapsed = sidebar.classList.contains('collapsed');
+    document.querySelectorAll('.dropdown-btn[aria-expanded]').forEach(btn => {
+      btn.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    });
   }
 
   // Dropdown open/close

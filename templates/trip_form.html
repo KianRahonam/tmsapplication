@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    label {
+        font-weight: bold;
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    textarea {
+        height: 40px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .actions {
+        grid-column: 1 / -1;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-start; /* align to left */
+    }
+
+    .actions button {
+        background-color: #ff6f61;
+        color: white;
+        border: none;
+        padding: 8px 16px;  /* smaller size */
+        font-size: 14px;    /* reduced text size */
+        border-radius: 4px;
+        cursor: pointer;
+        width: auto;        /* no full stretch */
+    }
+
+    .actions button:hover {
+        background-color: #e65b50;
+    }
+</style>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div>
+        <label for="id_vendor">Vendor</label>
+        {{ form.vendor }}
+    </div>
+
+    <div>
+        <label for="id_vehicle_type">Vehicle Type</label>
+        {{ form.vehicle_type }}
+    </div>
+
+    <div>
+        <label for="id_vehicle_capacity">Vehicle Capacity (MT)</label>
+        {{ form.vehicle_capacity }}
+    </div>
+
+    <div>
+        <label for="id_from_location">From Location</label>
+        {{ form.from_location }}
+    </div>
+
+    <div>
+        <label for="id_destination">Destination</label>
+        {{ form.destination }}
+    </div>
+
+    <div>
+        <label for="id_kilometer">Kilometer</label>
+        {{ form.kilometer }}
+    </div>
+
+    <div>
+        <label for="id_trip_charge">Trip Charge</label>
+        {{ form.trip_charge }}
+    </div>
+
+    <div>
+        <label for="id_additional_charge">Additional Charge</label>
+        {{ form.additional_charge }}
+    </div>
+
+    <div>
+        <label for="id_total_bill_amount">Total Bill Amount</label>
+        {{ form.total_bill_amount }}
+    </div>
+
+    <div>
+        <label for="id_status">Status</label>
+        {{ form.status }}
+    </div>
+
+    <div class="actions">
+        <button type="submit" name="save">Save Trip</button>
+        <button type="submit" name="save_add_another">Save & Add Another</button>
+    </div>
+</form>
+{% endblock %}

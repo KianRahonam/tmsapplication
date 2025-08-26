@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+{% block content %}
+<head>
+    <style>
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .scrollable-table-container {
+            max-height: 400px;
+            overflow: auto;
+            position: relative;
+        }
+        .shipment-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 14px;
+            table-layout: auto;
+        }
+        .shipment-table th,
+        .shipment-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            background-color: white;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+        .shipment-table th {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+        }
+        .shipment-table th:first-child {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 4;
+            background-color: #2c3e50;
+            color: white;
+        }
+        .shipment-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background-color: #ffffff;
+        }
+        .shipment-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .shipment-table tr:hover {
+            background-color: #f1f1f1;
+        }
+        .shipment-table a {
+            text-decoration: none;
+            color: white;
+            border-radius: 4px;
+            padding: 5px 8px;
+            font-size: 12px;
+        }
+        .shipment-table a.details-btn { background-color: #3498db; }
+        .shipment-table a.update-btn { background-color: #f39c12; }
+        .shipment-table a:hover { opacity: 0.85; }
+        .shipment-table td.actions-cell {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+            .shipment-table { font-size: 12px; }
+            .shipment-table th, .shipment-table td { padding: 8px; }
+        }
+    </style>
+</head>
+
+<section>
+    <form method="get" class="mb-3" style="display: flex; gap: 15px; align-items: center;">
+        <!-- Filter by Status -->
+        <div>
+            <label for="status-filter">Status:</label>
+            <select name="status" id="status-filter" onchange="this.form.submit()">
+                <option value="">-- All --</option>
+                <option value="In-Progress" {% if request.GET.status == "In-Progress" %}selected{% endif %}>In-Progress</option>
+                <option value="Closed" {% if request.GET.status == "Closed" %}selected{% endif %}>Closed</option>
+                <option value="Cancelled" {% if request.GET.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                <option value="Hold" {% if request.GET.status == "Hold" %}selected{% endif %}>Hold</option>
+            </select>
+        </div>
+
+        <!-- Filter by Trip ID -->
+        <div>
+            <label for="trip-filter">Trip ID:</label>
+            <input type="text" name="trip_id" id="trip-filter" value="{{ request.GET.trip_id }}" placeholder="Enter Trip ID">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+    <br>
+    <div class="scrollable-table-container">
+        <table class="shipment-table">
+            <thead>
+                <tr>
+                    <th>Trip ID</th>
+                    <th>Vendor</th>
+                    <th>Vehicle Type</th>
+                    <th>Capacity</th>
+                    <th>From</th>
+                    <th>Destination</th>
+                    <th>KMs</th>
+                    <th>Total Bill</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trip in trips %}
+                <tr>
+                    <td>{{ trip.trip_id }}</td>
+                    <td>{{ trip.vendor.vendor_name }}</td>
+                    <td>{{ trip.vehicle_type }}</td>
+                    <td>{{ trip.vehicle_capacity }}</td>
+                    <td>{{ trip.from_location }}</td>
+                    <td>{{ trip.destination }}</td>
+                    <td>{{ trip.kilometer }}</td>
+                    <td>{{ trip.total_bill_amount }}</td>
+                    <td>
+                        <form method="post" action="{% url 'trip-status-update' trip.id %}">
+                            {% csrf_token %}
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="In-Progress" {% if trip.status == "In-Progress" %}selected{% endif %}>In-Progress</option>
+                                <option value="Closed" {% if trip.status == "Closed" %}selected{% endif %}>Closed</option>
+                                <option value="Cancelled" {% if trip.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
+                                <option value="Hold" {% if trip.status == "Hold" %}selected{% endif %}>Hold</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td>{{ trip.created_at|date:"Y-m-d" }}</td>
+                    <td class="actions-cell">
+                        <a href="{% url 'trip-detail' trip.id %}" class="details-btn">View</a>
+                        <a href="{% url 'trip-update' trip.id %}" class="update-btn">Update</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11">No trips found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

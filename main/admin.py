@@ -13,8 +13,8 @@ from datetime import datetime  # Import datetime here
 from .models import CustomUser , Shipment, Manifest, CustomerMaster, Branch, Fleet
 from .forms import ManifestForm
 
-admin.site.site_header = "SAARIGE - ADMIN"
-admin.site.site_title = "SAARIGE - TMS"
+admin.site.site_header = "SVET - ADMIN"
+admin.site.site_title = "SVET - TMS"
 admin.site.index_title = "Welcome to Transport Management System"
 
 
@@ -358,3 +358,56 @@ class FleetMasterAdmin(admin.ModelAdmin):
             'fields': ('insurance_expiry', 'fitness_certificate_expiry')
         }),
     )
+from django.contrib import admin
+
+from .models import VendorMaster, TripOutToVendor
+
+
+@admin.register(VendorMaster)
+class VendorAdmin(admin.ModelAdmin):
+    list_display = (
+        "vendor_code",
+        "vendor_name",
+        "city",
+        "state",
+        "gstn",
+        "pan",
+        "status",
+        "created_at",
+    )
+    search_fields = ("vendor_code", "vendor_name", "city", "state", "gstn", "pan")
+    list_filter = ("status", "state", "created_at")
+    ordering = ("-created_at",)
+
+
+@admin.register(TripOutToVendor)
+class TripOutToVendorAdmin(admin.ModelAdmin):
+    list_display = (
+        "trip_id",
+        "vendor",
+        "vehicle_type",
+        "vehicle_capacity",
+        "from_location",
+        "destination",
+        "kilometer",
+        "trip_charge",
+        "additional_charge",
+        "total_bill_amount",
+        "status",
+        "created_at",
+    )
+    search_fields = (
+        "trip_id",
+        "vendor__vendor_name",
+        "vehicle_type",
+        "from_location",
+        "destination",
+    )
+    list_filter = ("status", "vendor", "created_at")
+    ordering = ("-created_at",)
+
+    def save_model(self, request, obj, form, change):
+        # auto calculate total bill if missing
+        if not obj.total_bill_amount:
+            obj.total_bill_amount = (obj.trip_charge or 0) + (obj.additional_charge or 0)
+        super().save_model(request, obj, form, change)

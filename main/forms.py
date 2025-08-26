@@ -89,3 +89,25 @@ class PODUploadForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+# forms.py
+from django import forms
+from .models import VendorMaster, TripOutToVendor
+
+class VendorMasterForm(forms.ModelForm):
+    class Meta:
+        model = VendorMaster
+        fields = [
+            'vendor_name', 'billing_address', 'city', 'state', 'country',
+            'gstn', 'pan', 'short_intro', 'active_till', 'status'
+        ]
+
+
+class TripOutToVendorForm(forms.ModelForm):
+    class Meta:
+        model = TripOutToVendor
+        fields = [
+            'vendor', 'vehicle_type', 'vehicle_capacity', 'from_location',
+            'destination', 'kilometer', 'trip_charge', 'additional_charge',
+            'total_bill_amount', 'status'
+        ]

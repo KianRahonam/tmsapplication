@@ -454,3 +454,110 @@ def manifest_list(request):
 def print_manifest_list(request):
     manifests = Manifest.objects.all()
     return render(request, 'print_manifest_list.html', {'manifests': manifests})
+
+# users/views.py
+from django.shortcuts import render
+
+def user_add(request):
+    return render(request, 'users/user_add.html')
+
+def user_manage(request):
+    return render(request, 'users/user_manage.html')
+
+
+# main/views.py
+def branch_add(request):
+    return render(request, 'main/branch_add.html')
+
+def branch_manage(request):
+    return render(request, 'main/branch_manage.html')
+
+def fleet_add(request):
+    return render(request, 'main/fleet_add.html')
+
+def fleet_manage(request):
+    return render(request, 'main/fleet_manage.html')
+
+from .forms import VendorMasterForm, TripOutToVendorForm
+
+def create_vendor(request):
+    if request.method == "POST":
+        form = VendorMasterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vendor created successfully ✅")
+            return redirect("vendor-list")  # define a vendor list page
+    else:
+        form = VendorMasterForm()
+    return render(request, "vendor_form.html", {"form": form})
+
+
+from .forms import TripOutToVendorForm
+
+def create_trip(request):
+    if request.method == "POST":
+        form = TripOutToVendorForm(request.POST)
+        if form.is_valid():
+            trip = form.save(commit=False)
+
+            # auto calculate if needed
+            if not trip.total_bill_amount:
+                trip.total_bill_amount = trip.trip_charge + trip.additional_charge
+            trip.save()
+
+            messages.success(request, f"Trip {trip.trip_id} created successfully ✅")
+            return redirect("trip-list")
+        else:
+            messages.error(request, "⚠️ Please correct the errors below.")
+    else:
+        form = TripOutToVendorForm()
+
+    return render(request, "trip_form.html", {"form": form,'pagename':'Create Trip'})
+
+
+from .models import TripOutToVendor
+
+def trip_list(request):
+    trips = TripOutToVendor.objects.all()
+
+    # Filter by status
+    status = request.GET.get("status")
+    if status:
+        trips = trips.filter(status=status)
+
+    # Filter by trip_id
+    trip_id = request.GET.get("trip_id")
+    if trip_id:
+        trips = trips.filter(trip_id__icontains=trip_id)
+
+    return render(request, "trip_list.html", {"trips": trips,'pagename':'Trip List'})
+
+def update_trip_status(request, pk):
+    trip = get_object_or_404(TripOutToVendor, pk=pk)
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        if new_status in dict(TripOutToVendor.STATUS_CHOICES):
+            trip.status = new_status
+            trip.save()
+            messages.success(request, f"Trip {trip.trip_id} status updated to {new_status}")
+    return redirect("trip-list")
+
+
+# Trip Detail View
+def trip_detail(request, pk):
+    trip = get_object_or_404(TripOutToVendor, pk=pk)
+    return render(request, "trip_detail.html", {"trip": trip,'pagename':'Trip Details'})
+
+
+# Trip Update View
+def trip_update(request, pk):
+    trip = get_object_or_404(TripOutToVendor, pk=pk)
+    if request.method == "POST":
+        form = TripOutToVendorForm(request.POST, instance=trip)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Trip {trip.trip_id} updated successfully ✅")
+            return redirect("trip-list")
+    else:
+        form = TripOutToVendorForm(instance=trip)
+    return render(request, "trip_update.html", {"form": form, "trip": trip,'pagename':'Trip Update'})

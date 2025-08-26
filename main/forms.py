@@ -77,8 +77,15 @@ class ManifestForm(forms.ModelForm):
 class PODUploadForm(forms.ModelForm):
     class Meta:
         model = Shipment
-        fields = ['pod_scan', 'delivery_date']
+        fields = ['pod_scan', 'delivery_date']  # ✅ REMOVE 'status' from fields!
         widgets = {
             'pod_scan': forms.FileInput(attrs={'accept': '.pdf,.jpg,.jpeg,.png'}),
             'delivery_date': forms.DateInput(attrs={'type': 'date'}),
         }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.status = 'Delivered'  # ✅ FORCE status to Delivered
+        if commit:
+            instance.save()
+        return instance

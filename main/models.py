@@ -3,6 +3,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import uuid
 from django.utils import timezone
+from django.contrib.auth.hashers import make_password
 
 class CustomerMaster(models.Model):
     STATUS_CHOICES = [
@@ -145,10 +146,18 @@ class CustomUser(AbstractUser):
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     phone_number = models.CharField(max_length=15)
     usertype = models.CharField(max_length=10, choices=USERTYPE_CHOICES, default='Internal')
-    company_name = models.ForeignKey(CustomerMaster, on_delete=models.CASCADE, null=True, blank=True)
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
+
+    company_name = models.ForeignKey('main.CustomerMaster', on_delete=models.CASCADE, null=True, blank=True)
+    branch = models.ForeignKey('main.Branch', on_delete=models.SET_NULL, null=True, blank=True)
+
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     user_status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='Active')
+
+    def save(self, *args, **kwargs):
+        # If the user is being created and no password is set, assign a default password
+        if not self.pk and not self.password:
+            self.password = make_password('admin@2025')  # Set default password securely
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.username
@@ -175,7 +184,7 @@ class Shipment(models.Model):
         ('LTL', 'LTL'),
         ('FTL', 'FTL')
     ]
-
+    
     consignment_no = models.CharField(max_length=50, unique=True, editable=False)
     date = models.DateField(default=timezone.now)
     freight = models.DecimalField(max_digits=10, decimal_places=2)
@@ -187,6 +196,15 @@ class Shipment(models.Model):
     destination_pin = models.CharField(max_length=6)
     vehicle_no = models.CharField(max_length=50)
     driver_details = models.CharField(max_length=100)
+    billto_customer = models.ForeignKey(
+        "CustomerMaster",
+        on_delete=models.CASCADE,
+        to_field="customer_id",   # ✅ point to customer_id
+        db_column="billto_customer",  # ✅ column in Shipment table
+        related_name="shipments",
+        null=True,
+        blank=True,
+    )
 
     # Consignor (Shipper)
     consignor_name = models.CharField(max_length=100)
@@ -200,8 +218,8 @@ class Shipment(models.Model):
     consignee_gst = models.CharField(max_length=20, blank=True, null=True)
     consignee_contact = models.CharField(max_length=20)
 
-    invoice_ref_number = models.CharField(max_length=100)
-    ewaybill_number = models.CharField(max_length=100, blank=True, null=True)
+    invoice_ref_number = models.CharField(max_length=500)
+    ewaybill_number = models.CharField(max_length=500, blank=True, null=True)
     value = models.DecimalField(max_digits=12, decimal_places=2)
     no_article = models.IntegerField(default=0)
     actual_weight = models.DecimalField(max_digits=12, decimal_places=2, default=0.0)
@@ -217,7 +235,7 @@ class Shipment(models.Model):
     appointment_date = models.DateField(blank=True, null=True)
 
     remark = models.TextField(null=True, blank=True)
-    # pod_link = models.URLField(max_length=500, blank=True, null=True)
+    pod_link = models.URLField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.pk and not self.consignment_no:

@@ -8,6 +8,8 @@
     <meta charset="UTF-8">
     <title>Shipment List</title>
     <style>
+
+
         h2 {
             color: #2c3e50;
             margin-bottom: 20px;
@@ -100,11 +102,25 @@
 </head>
 <body>
     <div class="container">
-        <div style="text-align: right; margin-bottom: 15px;">
-            <form method="get" action="{% url 'shipment_report_download' %}">
-                <button type="submit" class="details-btn" style="background-color: #27ae60;">Download Report (CSV)</button>
-            </form>
-        </div>
+    <!-- Date filter form -->
+    <form method="get" action="" style="margin-bottom: 15px; display:flex; gap:10px; align-items:center;">
+        <label>From:</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control" style="padding:5px;">
+        <label>To:</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control" style="padding:5px;">
+        <button type="submit" class="details-btn" style="background-color:#2980b9;">Filter</button>
+        <a href="{% url 'shipment_list' %}" class="update-btn" style="background-color:#7f8c8d;">Reset</a>
+    </form>
+
+    <!-- Download CSV -->
+    <div style="text-align: right; margin-bottom: 15px;">
+        <form method="get" action="{% url 'shipment_report_download' %}">
+            <button type="submit" class="details-btn" style="background-color: #27ae60;">
+                Download Report (CSV)
+            </button>
+        </form>
+    </div>
+
         <div class="scrollable-table-container">
             <table class="shipment-table">
                 <thead>
@@ -117,7 +133,6 @@
                         <th>Destination</th>
                         <th>Vehicle No</th>
                         <th>Status</th>
-                        <th>POD</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -132,25 +147,14 @@
                         <td>{{ shipment.destination }}</td>
                         <td>{{ shipment.vehicle_no }}</td>
                         <td>{{ shipment.status }}</td>
-                        <td>
-                            {% if shipment.pod_scan %}
-                                <a href="{{ shipment.pod_scan.url }}" target="_blank" class="details-btn">View POD</a>
-                            {% else %}
-                                Not uploaded
-                            {% endif %}
-                        </td>
                         <td class="actions-cell">
-                            {% if user.usertype == 'Internal' %}
                             <a href="{% url 'shipment_detail' shipment.pk %}" class="details-btn">Details</a>
                             <a href="{% url 'shipment_update' shipment.pk %}" class="update-btn">Update</a>
-                            {% else %}
-                                <a href="{% url 'shipment_detail' shipment.pk %}" class="details-btn">Details</a>
-                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="10">No shipments available.</td>
+                        <td colspan="9">No shipments available.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

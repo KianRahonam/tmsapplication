@@ -73,9 +73,9 @@ class ShipmentUploadForm(forms.Form):
 @admin.register(Shipment)
 class ShipmentAdmin(admin.ModelAdmin):
     list_display = (
-        'consignment_no', 'date', 'origin', 'destination',
+        'consignment_no','billto_customer', 'date', 'origin', 'destination',
         'vehicle_no', 'payment_mode', 'status', 'estimated_delivery_date',
-        'delivery_date', 'pod_preview'
+        'delivery_date', 'pod_preview','pod_link_display'
     )
     list_filter = ('status', 'payment_mode', 'origin', 'destination')
     search_fields = (
@@ -86,6 +86,9 @@ class ShipmentAdmin(admin.ModelAdmin):
     readonly_fields = ('pod_preview',)
 
     fieldsets = (
+        ('Billed To', {
+            'fields': ('billto_customer',)
+        }),
         ('Shipment Info', {
             'fields': ('date', 'freight', 'payment_mode', 'shipment_type', 'status')
         }),
@@ -115,6 +118,12 @@ class ShipmentAdmin(admin.ModelAdmin):
         if obj.pod_scan:
             return format_html('<a href="{}" target="_blank">View POD</a>', obj.pod_scan.url)
         return "No POD uploaded"
+        
+    def pod_link_display(self, obj):
+        if obj.pod_link:
+            return format_html('<a href="{}" target="_blank">View POD</a>', obj.pod_link)
+        return "-"
+    pod_link_display.short_description = "POD Link"
 
     change_list_template = "admin/shipment_upload.html"
 
@@ -201,8 +210,9 @@ class ShipmentAdmin(admin.ModelAdmin):
                             estimated_delivery_date=estimated_delivery_date,
                             delivery_date=delivery_date,
                             appointment_delivery=row.get('appointment_delivery', False),
-                            appointment_date=appointment_date,  # Accept blank appointment date
+                            appointment_date=appointment_date,
                             remark=row.get('remark', None),
+                            pod_link=row.get('pod_link', None),   # ✅ FIXED HERE
                         )
                         created_count += 1
 
@@ -233,7 +243,7 @@ class ShipmentAdmin(admin.ModelAdmin):
             "invoice_ref_number", "ewaybill_number", "value", "no_article",
             "actual_weight", "charged_weight", "pack_type", "status",
             "estimated_delivery_date", "delivery_date", "pod_scan",
-            "appointment_delivery", "appointment_date", "remark"
+            "appointment_delivery", "appointment_date", "remark","pod_link"
         ]
 
         ws.append(headers)
@@ -247,7 +257,7 @@ class ShipmentAdmin(admin.ModelAdmin):
             "INV-001", "EWB12345", 50000.00, 10,
             100.0, 120.0, "Box", "Booked",
             "2025-08-15", "2025-08-20", "http://example.com/pod.pdf",
-            False, "", "Handle with care"
+            False, "", "Handle with care","http://example.com/pod.pdf"
         ])
 
         response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")

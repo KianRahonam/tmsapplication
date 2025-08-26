@@ -93,13 +93,41 @@ def shipment_create(request):
         form = ShipmentForm()
     return render(request, 'shipment_create.html', {'form': form, 'pagename': 'Create Shipment'})
 
+import csv
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .models import Shipment
+
+
+@login_required
 def shipment_list(request):
-    shipments = Shipment.objects.all().order_by('-date')
-    return render(request, 'shipment_list.html', {'shipments': shipments, 'pagename': 'Shipment List'})
+    if request.user.is_authenticated:
+        if request.user.usertype == "Internal":
+            # Internal staff/admin → see all shipments
+            shipments = Shipment.objects.all().order_by('-date')
+        else:
+            # External staff/users → only see shipments for their company
+            shipments = Shipment.objects.filter(
+                billto_customer=request.user.company_name
+            ).order_by('-date')
+    else:
+        shipments = Shipment.objects.none()  # no access for anonymous users
 
+    return render(request, 'shipment_list.html', {
+        'shipments': shipments,
+        'pagename': 'Shipment List'
+    })
 
+@login_required
 def download_shipment_report(request):
-    shipments = Shipment.objects.all().order_by('-date')
+    user = request.user
+
+    if user.is_superuser or user.is_staff:
+        shipments = Shipment.objects.all().order_by('-date')
+    else:
+        shipments = Shipment.objects.filter(
+            billto_customer=user.customer
+        ).order_by('-date') if user.customer else Shipment.objects.none()
 
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="shipment_report.csv"'
@@ -147,10 +175,11 @@ def download_shipment_report(request):
             s.status,
             s.estimated_delivery_date or '',
             s.delivery_date or '',
-            s.pod_scan.url if s.pod_scan else ''
+            s.pod_scan.url if getattr(s, 'pod_scan', None) else ''
         ])
 
     return response
+
 
 def shipment_detail(request, pk):
     shipment = get_object_or_404(Shipment, pk=pk)
@@ -166,6 +195,14 @@ def shipment_update(request, pk):
     else:
         form = ShipmentUpdateForm(instance=shipment)
     return render(request, 'shipment_update.html', {'form': form, 'shipment': shipment})
+
+from django.utils import timezone
+from django.utils.dateparse import parse_date
+from django.http import HttpResponse
+import pandas as pd
+import csv
+
+from .models import Shipment, CustomerMaster  # make sure CustomerMaster is imported
 
 def shipment_bulk_upload(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -184,11 +221,22 @@ def shipment_bulk_upload(request):
         generated_data = []
         for index, row in df.iterrows():
             try:
+                # --- Handle billto_customer (ForeignKey) ---
+                customer_id = str(row['billto_customer']).strip() if pd.notnull(row.get('billto_customer')) else None
+                billto_customer = None
+                if customer_id:
+                    try:
+                        billto_customer = CustomerMaster.objects.get(customer_id=customer_id)
+                    except CustomerMaster.DoesNotExist:
+                        return HttpResponse(f"Row {index+1} failed: Customer with ID '{customer_id}' not found", status=400)
+
+                # --- Create Shipment ---
                 shipment = Shipment(
                     date=parse_date(str(row['date'])) if pd.notnull(row['date']) else timezone.now().date(),
                     freight=float(row['freight']),
                     payment_mode=row['payment_mode'],
                     shipment_type=row['shipment_type'],
+                    billto_customer=billto_customer,   # ✅ fixed
                     origin=row['origin'],
                     origin_pin=str(row['origin_pin']),
                     destination=row['destination'],
@@ -215,6 +263,8 @@ def shipment_bulk_upload(request):
                     delivery_date=parse_date(str(row.get('delivery_date'))) if pd.notnull(row.get('delivery_date')) else None
                 )
                 shipment.save()
+
+                # --- Collect summary for download ---
                 generated_data.append({
                     'invoice_ref_number': shipment.invoice_ref_number,
                     'consignment_no': shipment.consignment_no,
@@ -226,6 +276,7 @@ def shipment_bulk_upload(request):
             except Exception as e:
                 return HttpResponse(f"Row {index+1} failed: {str(e)}", status=500)
 
+        # --- Return summary as CSV ---
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="uploaded_shipments.csv"'
         writer = csv.DictWriter(response, fieldnames=['invoice_ref_number', 'consignment_no', 'date', 'origin', 'destination', 'freight'])
@@ -356,6 +407,7 @@ def public_tracking_status(request):
     consignment_nos = request.GET.get('consignments')
     shipments = Shipment.objects.filter(consignment_no__in=consignment_nos.strip().split()) if consignment_nos else []
     return render(request, 'public_tracking.html', {'shipments': shipments})
+
 
 # ---------------------------
 # Manifest
